@@ -1,0 +1,199 @@
+
+/ {
+	reserved_memory: reserved-memory {
+		removed_region: removed_region@c0000000 {
+			/delete-property/ reg;
+			reg = <0x0 0xc0000000 0x0 0x7b00000>;
+		};
+		//#endif /* OPLUS_FEATURE_FINGERPRINT */
+	};
+
+	shell_front {
+			compatible = "oplus,shell-temp";
+	};
+	shell_frame {
+			compatible = "oplus,shell-temp";
+	};
+	shell_back {
+			compatible = "oplus,shell-temp";
+	};
+};
+
+&soc {
+	qcom_seecom: qseecom@c1700000 {
+		/delete-property/ reg;
+		reg = <0xc1700000 0x6400000>;
+	};
+
+	qcom_smcinvoke: smcinvoke@c1700000 {
+		/delete-property/ reg;
+		reg = <0xc1700000 0x6400000>;
+	};
+	//#endif /* OPLUS_FEATURE_FINGERPRINT */
+
+	// #ifdef OPLUS_FEATURE_SECURITY_COMMON
+	/* Ping.Liu@Bsp.Fingerprint.Secure 2020-12-23 add for secure proc */
+	oplus_secure_common {
+		compatible = "oplus,secure_common";
+	};
+	// #endif /* OPLUS_FEATURE_SECURITY_COMMON */
+
+	//#ifdef OPLUS_FEATURE_FINGERPRINT
+	//Shengwang.Luo@BSP.Fingerprint.Basic 2020/11/11 add for oplus fingerprint
+	oplus_fp_common {
+		compatible = "oplus,fp_common";
+		oplus,fp_gpio_num = <1>;
+		oplus,fp_gpio_0 = <&tlmm 12 0x0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_id2_default>;
+		goodix_fp_3626 {
+			oplus,fp-id = <1>; /* fp id mapping table */
+			vendor-chip = <16>; /* please refer to the struct fp_vendor_t in oppo_fp_commmon.h */
+			eng-menu = "-1,-1"; /* represents SNR, inclination test item in engineer menu, and 0/1 means off/on */
+			chip-name = "G_3626";  /* /proc/fp_id, will be displayed in engineer menu  */
+		};
+	};
+
+	goodix_fp {
+		status = "ok";
+		compatible = "goodix,goodix_fp";
+		interrupt-parent = <&tlmm>;
+		interrupts = <17 0>;
+		ldo-supply = <&pm6350_l8>;
+		ldo-config = <3000000 3000000 150000>;
+		goodix,gpio_irq = <&tlmm 17 0x1>;
+		goodix,gpio_reset = <&tlmm 18 0x0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_goodix_irq_default>;
+		power-num = <1>;
+		power_source_1 {
+			power-mode = <1>;
+			power-name = "ldo";
+			power-config = "ldo-config";
+			delay-time = <0>;
+		};
+	};
+	//#endif /*OPLUS_FEATURE_FINGERPRINT*/
+
+	/* #ifdef OPLUS_FEATURE_TP_BASIC */
+	/* Qingwen.Liu@RM.BSP.Basic 2020/12/9 add for for device-info */
+	devinfo {
+		compatible = "oplus-devinfo";
+		pinctrl-names = "active","sleep";
+		pinctrl-0 = <&hw_sub1_pullup>;
+		pinctrl-1 = <&hw_sub1_pulldown>;
+
+		main-sub {
+			compatible = "hw-match, main-sub";
+			aboard-gpio0 = <&pm7250b_gpios 11 0x00>;
+			aboard-patterns = <1 1 1>;
+			match-projects = <20669 20751 20750>;
+		};
+	};
+	/* #endif OPLUS_FEATURE_TP_BASIC */
+
+    //#ifdef OPLUS_FEATURE_TP_BASIC
+	oplus_sim_detect {
+		compatible = "oplus, sim_detect";
+		Hw,sim_det = <&tlmm 94 0>;
+	};
+    //#endif /* OPLUS_FEATURE_TP_BASIC */
+
+	/* #ifdef OPLUS_FEATURE_TP_BASIC */
+	/* Qingwen.Liu@RM.BSP.Basic 2020/12/10 modify for oppo rf cable monitor */
+	oplus_rf_cable {
+		compatible = "oplus,rf_cable";
+		interrupt-parent = <&tlmm>;
+		rf_cable_support_num = <1>;
+		rf,cable0-gpio = <&tlmm 24 0>;
+		rf,cable-support-timer = <0>;
+		pinctrl-names = "rf_cable_active";
+		pinctrl-0 = <&rf_cable0_active>;
+	};
+	/* #endif OPLUS_FEATURE_TP_BASIC */
+
+};
+
+&pm7250b_gpios {
+	/* #ifdef OPLUS_FEATURE_TP_BASIC */
+	/* Qingwen.Liu@RM.BSP.Basic 2020/12/9 add for for device-info */
+	hw_sub1_gpio_active {
+		hw_sub1_pullup: hw_sub1_pullup {
+			pins = "gpio11";
+			function = "normal";
+			input-enable;
+			bias-pull-up;
+			power-source = <0>;
+		};
+	};
+
+	hw_sub1_gpio_sleep {
+		hw_sub1_pulldown: hw_sub1_pulldown {
+			pins = "gpio11";
+			function = "normal";
+			input-enable;
+			bias-pull-down;
+			power-source = <0>;
+		};
+	};
+	/* #endif OPLUS_FEATURE_TP_BASIC */
+
+};
+
+&tlmm {
+	//#ifdef OPLUS_FEATURE_FINGERPRINT
+	//Shengwang.Luo@BSP.Fingerprint.Basic 2020/10/19 add for oplus fingerprint
+	oplus_fp_common{
+		gpio_id2_default: gpio_id2_default {
+			mux {
+				pins = "gpio12";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio12";
+				drive-strength = <2>;
+				bias-pull-up;
+				input-enable;
+			};
+		};
+	};
+	goodix_fp{
+		gpio_goodix_irq_default: gpio_goodix_irq_default {
+			mux {
+				pins = "gpio17";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio17";
+				drive-strength = <2>;
+				bias-disable;
+				input-enable;
+			};
+		};
+	};
+	//#endif /*OPLUS_FEATURE_FINGERPRINT*/
+
+	/* #ifdef OPLUS_FEATURE_TP_BASIC */
+	/* Qingwen.Liu@RM.BSP.Basic 2020/12/10 modify for oppo rf cable monitor */
+	rf_cable0_active: rf_cable0_active {
+		mux {
+			pins = "gpio24";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio24";
+			drive-strength = <2>;
+			input-enable;
+			bias-pull-up;
+		};
+	};
+	/* #endif OPLUS_FEATURE_TP_BASIC */
+};
+
+/* #ifdef OPLUS_BUG_STABILITY */
+/*Jianxiong.Zeng@MULTYMEDIA.Display.LCD 2021/03/19 add for disable SSC*/
+&mdss_dsi0_pll{
+	/delete-property/ qcom,dsi-pll-ssc-en;
+	/delete-property/ qcom,dsi-pll-ssc-mode;
+};
+/* #endif OPLUS_BUG_STABILITY */

@@ -1,0 +1,43 @@
+
+/ {
+	reserved_memory: reserved-memory {
+		removed_region: removed_region@c0000000 {
+			/delete-property/ reg;
+			reg = <0x0 0xc0000000 0x0 0x7b00000>;
+		};
+		//#endif /* OPLUS_FEATURE_FINGERPRINT */
+
+// #ifdef OPLUS_SYSTEM_UBOOT_LOG
+// xbl_uefi_mem address get from boot_images Core.dsc.inc file: PcdEmbeddedFdBaseAddress + SERIAL_BUFFER_OFFSET,0x9FE00000+0x1F7000=0x9FFF7000
+// kernel boot log: 0x9FE00000~ 0x9FFF7000
+		kboot_uboot_logmem: kboot_uboot_logmem@0x9FE00000 {
+			reg = <0x0 0x9FE00000 0x0 0x200000>;
+			compatible = "oppo,xbl_uefi_kbootlog";
+			xbluefi-offset = <0x1F7000>;
+			no-map;
+		};
+// #endif
+	};
+
+};
+
+&soc {
+	qcom_seecom: qseecom@c1700000 {
+		/delete-property/ reg;
+		reg = <0xc1700000 0x6400000>;
+	};
+
+	qcom_smcinvoke: smcinvoke@c1700000 {
+		/delete-property/ reg;
+		reg = <0xc1700000 0x6400000>;
+	};
+	//#endif /* OPLUS_FEATURE_FINGERPRINT */
+
+	// #ifdef OPLUS_FEATURE_SECURITY_COMMON
+	/* Ping.Liu@Bsp.Fingerprint.Secure 2020-12-23 add for secure proc */
+	oplus_secure_common {
+		compatible = "oplus,secure_common";
+	};
+	// #endif /* OPLUS_FEATURE_SECURITY_COMMON */
+};
+
